@@ -1,12 +1,12 @@
 from PIL import Image, ImageDraw
 import numpy as np
 import matplotlib.pyplot as plt
-from numba import njit
+from numba import njit, prange
 import time
 
 
 CONVERGENCE_THRESHOLD = 2
-MAX_ITERATIONS = 100
+MAX_ITERATIONS = 50
 X_MIN, X_MAX = -2.5, 1.5
 Y_MIN, Y_MAX = -2, 2
 
@@ -38,7 +38,7 @@ def mandelbrot_array(x_width, y_height):
     return 255 - iterations / MAX_ITERATIONS * 255
 
 
-@njit
+@njit(parallel=True)
 def njit_mandelbrot_array(x_width, y_height):
     iterations = np.empty((y_height, x_width))
 
@@ -57,7 +57,27 @@ def njit_mandelbrot_array(x_width, y_height):
 
     return 255 - (iterations / MAX_ITERATIONS * 255)
 
-image = Image.new('L', (20000, 20000))
+@njit(parallel=True)
+def njit_mandelbrot_array_fast(x_width, y_height):
+    iterations = np.empty((y_height, x_width))
+    for x in prange(x_width):
+        for y in prange(y_height):
+            c = complex(X_MIN + (x / x_width) * (X_MAX - X_MIN), Y_MIN + (y / y_height) * (Y_MAX - Y_MIN))
+        
+            z = 0
+            i = 0
+            for _ in range(MAX_ITERATIONS):
+                z = z**2 + c
+                if abs(z) > CONVERGENCE_THRESHOLD:
+                    break
+                i+=1
+            iterations[x, y] = i
+    
+    iterations = iterations.transpose()
+    return 255 - (iterations / MAX_ITERATIONS * 255)
+
+
+image = Image.new('L', (10000, 10000))
 x_width, y_height = image.size
 
 # start_time = time.time()
@@ -69,14 +89,14 @@ x_width, y_height = image.size
 # print(f'mandelbrot_array: {time.time() - start_time}')
 
 start_time = time.time()
-img_arr = njit_mandelbrot_array(x_width, y_height)
+img_arr = njit_mandelbrot_array_fast(x_width, y_height)
 print(f'njit_mandelbrot_array: {time.time() - start_time}')
 
 image.putdata(img_arr.flatten().tolist())
 
 image.save(f'./output_np.png')
 
-plt.style.use('default')
-plt.imshow(img_arr, cmap='gray')
-plt.axis('off')
-plt.show()
+# plt.style.use('default')
+# plt.imshow(img_arr, cmap='gray')
+# plt.axis('off')
+# plt.show()
