@@ -5,6 +5,7 @@ from numba import njit, prange
 import time
 import random
 from time import sleep
+import sys
 
 
 CONVERGENCE_THRESHOLD = 2
@@ -31,7 +32,7 @@ def juilia_set(x_width, y_height, c):
     return 255 - (iterations / MAX_ITERATIONS * 255)
 
 if __name__ == '__main__':
-    for _ in range(1):
+    for _ in range(10):
         start_time = time.time()
 
         image = Image.new('L', (2000, 2000))
@@ -40,7 +41,6 @@ if __name__ == '__main__':
 
 
         constant = complex(round(random.random() * random.choice([1, -1]), 3),round(random.random() * random.choice([1, -1]), 3))
-        constant = complex(-0.1, 0.256)
         img_arr = juilia_set(x_width, y_height, c = constant)
         image.putdata(img_arr.flatten().tolist())
 
@@ -50,8 +50,9 @@ if __name__ == '__main__':
         plt.imshow(img_arr, cmap='gray')
         plt.axis('off')
         plt.show()
-        cool = input("Cool? ")
-        if cool == 'y':
+        cool = input('Cool? (y/n): ')
+        print(cool)
+        if cool == '' or cool == 'y':
             image.save(f'./julia/julia_cool_{constant.real}_{constant.imag}.png')
         else:
             image.save(f'./julia/julia_{constant.real}_{constant.imag}.png')
