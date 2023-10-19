@@ -31,14 +31,16 @@ def juilia_set(x_width, y_height, c):
     return 255 - (iterations / MAX_ITERATIONS * 255)
 
 if __name__ == '__main__':
-    for _ in range(100):
+    for _ in range(1):
         start_time = time.time()
 
-        image = Image.new('L', (2000, 2000))n
+        image = Image.new('L', (2000, 2000))
         x_width, y_height = image.size
 
-        constant = complex(round(random.random() * random.choice([1, -1]), 3),round(random.random() * random.choice([1, -1]), 3))
 
+
+        constant = complex(round(random.random() * random.choice([1, -1]), 3),round(random.random() * random.choice([1, -1]), 3))
+        constant = complex(-0.1, 0.256)
         img_arr = juilia_set(x_width, y_height, c = constant)
         image.putdata(img_arr.flatten().tolist())
 
