@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from numba import njit, prange
 import time
+import random
+from time import sleep
 
 
 CONVERGENCE_THRESHOLD = 2
@@ -12,7 +14,7 @@ Y_MIN, Y_MAX = -2, 2
 
 
 @njit(parallel=True)
-def njit_mandelbrot_array_fast(x_width, y_height, c):
+def juilia_set(x_width, y_height, c):
     iterations = np.empty((y_height, x_width))
     for x in prange(x_width):
         for y in prange(y_height):
@@ -29,19 +31,26 @@ def njit_mandelbrot_array_fast(x_width, y_height, c):
     return 255 - (iterations / MAX_ITERATIONS * 255)
 
 if __name__ == '__main__':
-    start_time = time.time()
+    for _ in range(100):
+        start_time = time.time()
 
-    image = Image.new('L', (2000, 2000))
-    x_width, y_height = image.size
+        image = Image.new('L', (2000, 2000))n
+        x_width, y_height = image.size
 
-    img_arr = njit_mandelbrot_array_fast(x_width, y_height, c = complex(-0.8, 0.156))
-    image.putdata(img_arr.flatten().tolist())
-    image.save(f'./output_np.png')
+        constant = complex(round(random.random() * random.choice([1, -1]), 3),round(random.random() * random.choice([1, -1]), 3))
 
-    print(f'Runtime: {time.time() - start_time}')
+        img_arr = juilia_set(x_width, y_height, c = constant)
+        image.putdata(img_arr.flatten().tolist())
 
-    plt.style.use('default')
-    plt.imshow(img_arr, cmap='gray')
-    plt.axis('off')
-    plt.show()
+        print(f'Runtime: {time.time() - start_time}')
+
+        plt.style.use('default')
+        plt.imshow(img_arr, cmap='gray')
+        plt.axis('off')
+        plt.show()
+        cool = input("Cool? ")
+        if cool == 'y':
+            image.save(f'./julia/julia_cool_{constant.real}_{constant.imag}.png')
+        else:
+            image.save(f'./julia/julia_{constant.real}_{constant.imag}.png')
 
