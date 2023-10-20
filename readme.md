@@ -1,8 +1,8 @@
 
-# Mandelbrot/Julia Set Generator
+# Mandelbrot Set Generator
 
 ## Description
-This program is a mandelbrot set generator. It uses the numpy and numba to calculate the set. An Julia set generator is also included.
+This program is a mandelbrot set generator. It uses the numpy and numba to calculate the set. A Julia set generator is also included.
 
 ## Resources
 https://complex-analysis.com/content/mandelbrot_set.html
